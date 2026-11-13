@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class Order extends Auditable {
   private boolean deleted = false;
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OrderBy("id")
   private List<OrderItem> orderItems = new ArrayList<>();
 
   public void addOrderItem(OrderItem orderItem) {
