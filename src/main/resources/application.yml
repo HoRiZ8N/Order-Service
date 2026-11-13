@@ -12,8 +12,37 @@ spring:
     properties:
       hibernate:
         default_batch_fetch_size: 50
+  data:
+    web:
+      pageable:
+        max-page-size: 100
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+  http:
+    client:
+      connect-timeout: ${USER_SERVICE_CONNECT_TIMEOUT:2s}
+      read-timeout: ${USER_SERVICE_READ_TIMEOUT:3s}
 
 server:
-  port: ${APP_PORT:8080}
+  port: ${APP_PORT:8082}
+
+app:
+  user-service:
+    url: ${USER_SERVICE_URL}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userService:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 2s
+        slow-call-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        ignore-exceptions:
+          - com.example.orderservice.exception.ResourceNotFoundException
+          - com.example.orderservice.exception.UserServiceAccessException
